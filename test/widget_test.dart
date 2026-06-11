@@ -7,10 +7,16 @@ import 'package:inventory_counting/theme/tokens.dart';
 import 'package:inventory_counting/screens/new_count_screen.dart';
 
 void main() {
-  testWidgets('Dashboard renders header and a count card', (WidgetTester tester) async {
+  testWidgets('App starts on login, sample-data path opens dashboard', (WidgetTester tester) async {
     await tester.pumpWidget(const InventoryCountingApp());
     await tester.pump();
 
+    // Login is the entry point.
+    expect(find.text('Sign In'), findsOneWidget);
+
+    // The "continue with sample data" path lands on the dashboard.
+    await tester.tap(find.text('Continue with sample data'));
+    await tester.pumpAndSettle();
     expect(find.text('Inventory Counts'), findsOneWidget);
     expect(find.text('New Count'), findsOneWidget);
   });
