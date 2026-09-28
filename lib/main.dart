@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'api/token_store.dart';
-import 'api/app_config.dart';
 import 'theme/tokens.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/login_screen.dart';
@@ -17,9 +16,7 @@ void main() async {
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light,
   ));
-  if (AppConfig.useLiveApi) {
-    await TokenStore.instance.load();
-  }
+  await TokenStore.instance.load();
   runApp(const InventoryCountingApp());
 }
 
@@ -28,11 +25,11 @@ class InventoryCountingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Live mode starts at login unless we already hold a token; otherwise the
-    // app runs on bundled sample data straight from the dashboard.
-    final Widget home = (AppConfig.useLiveApi && !TokenStore.instance.isLoggedIn)
-        ? const LoginScreen()
-        : const DashboardScreen();
+    // Start at login unless a saved session exists. From login the user signs
+    // in via /auth/login, or (while the backend is being deployed) continues
+    // with sample data.
+    final Widget home =
+        TokenStore.instance.isLoggedIn ? const DashboardScreen() : const LoginScreen();
     return MaterialApp(
       title: 'Inventory Counting',
       debugShowCheckedModeBanner: false,
